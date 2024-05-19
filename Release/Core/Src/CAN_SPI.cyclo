@@ -1,0 +1,9 @@
+../Core/Src/CAN_SPI.c:336:13:convertCANid2Reg.constprop	2
+../Core/Src/CAN_SPI.c:24:6:CANSPI_Sleep	1
+../Core/Src/CAN_SPI.c:36:5:CANSPI_Initialize	3
+../Core/Src/CAN_SPI.c:137:9:CANSPI_Transmit	4
+../Core/Src/CAN_SPI.c:185:9:CANSPI_Receive	5
+../Core/Src/CAN_SPI.c:236:9:CANSPI_messagesInBuffer	2
+../Core/Src/CAN_SPI.c:256:9:CANSPI_isBussOff	1
+../Core/Src/CAN_SPI.c:271:9:CANSPI_isRxErrorPassive	1
+../Core/Src/CAN_SPI.c:286:9:CANSPI_isTxErrorPassive	1

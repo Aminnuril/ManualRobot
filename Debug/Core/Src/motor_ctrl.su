@@ -1,0 +1,6 @@
+../Core/Src/motor_ctrl.c:72:6:motor_init	16	static
+../Core/Src/motor_ctrl.c:81:6:motor_drive	16	static
+../Core/Src/motor_ctrl.c:96:6:disable_motor	16	static
+../Core/Src/motor_ctrl.c:100:6:enable_motor	16	static
+../Core/Src/motor_ctrl.c:104:6:bldc_init	16	static
+../Core/Src/motor_ctrl.c:109:6:bldc_drive	16	static
