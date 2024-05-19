@@ -1598,10 +1598,10 @@ void OmniHandle_Task(void const * argument)
 
 	  kinematikM(lxm, lym, th, nos);
 	  for (uint8_t i = 0; i < 4; i++) {
-		  wheel[0] = map(out[0], -360, 360, -1000, 1000);//386
-		  wheel[1] = map(out[1], -360, 360, -1000, 1000);
-		  wheel[2] = map(out[2], -360, 360, -1000, 1000);
-		  wheel[3] = map(out[3], -360, 360, -1000, 1000);
+		  wheel[0] = map(out[0], -360, 400, -1000, 1000);//386
+		  wheel[1] = map(out[1], -360, 400, -1000, 1000);//360
+		  wheel[2] = map(out[2], -360, 400, -1000, 1000);
+		  wheel[3] = map(out[3], -360, 400, -1000, 1000);
 	  }
 //	  read_pulse_A(&R_front);
 //	  read_pulse_B(&R_front);
