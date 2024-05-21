@@ -87,6 +87,7 @@ int kec=0,kec1=0;
 int adj=0;
 int dutyAdj=0;
 uint32_t dutyR=3000;
+int l=1;
 int k=3000;
 //debounce
 uint32_t currentTick,nowTick;
@@ -128,6 +129,9 @@ int _write(int file, char *ptr, int len){
 void mode_padi(){
 	lsflag_6=HAL_GPIO_ReadPin(LS_6_GPIO_Port, LS_6_Pin);
 	lsflag_7=HAL_GPIO_ReadPin(LS_7_GPIO_Port, LS_7_Pin);
+	p4 = HAL_GPIO_ReadPin(PISTON_D_GPIO_Port, PISTON_D_Pin);
+	p5 = HAL_GPIO_ReadPin(PISTON_PADI_GPIO_Port, PISTON_PADI_Pin);
+	l=1;
 	if (kanan==1){//nutup manual 1, buka -1
 		motor_drive(&MExtendRight, 1, 750);//kanan 1
 		lsflag_7=1;
@@ -166,19 +170,22 @@ void mode_padi(){
 
 	if (bawah==1){//buka manual
 		atas1=0;
-		if (lsflag_7==1){
-			motor_drive(&MExtendRight, -1, 500);//kiri
-		}
-		else {
-			motor_drive(&MExtendRight, 0, 0);
-		}
-
-		if (lsflag_6==1){
-			motor_drive(&MExtendLeft, 1, 500);
-		}
-		else {
-			motor_drive(&MExtendLeft, 0, 0);
-		}
+//		lsflag_4=1;
+		loopPadi=0;
+		stepPadi=0;
+//		if (lsflag_7==1){
+//			motor_drive(&MExtendRight, -1, 500);//kiri
+//		}
+//		else {
+//			motor_drive(&MExtendRight, 0, 0);
+//		}
+//
+//		if (lsflag_6==1){
+//			motor_drive(&MExtendLeft, 1, 500);
+//		}
+//		else {
+//			motor_drive(&MExtendLeft, 0, 0);
+//		}
 	}
 
 	if (kotak==1){
@@ -225,20 +232,25 @@ void mode_padi(){
 	}
 
 	if (r3==1){//start zone/ posisi awal tekuk dan bawah nyentuh ls4
+		r3a=1;
+	}
+	else if(r3a==1){
 		if(currentTick-nowTick>500){
 			HAL_GPIO_TogglePin(PISTON_PADI_GPIO_Port, PISTON_PADI_Pin);
 			nowTick = currentTick;
 		}
 		vTaskDelay(300);
-		p4 = HAL_GPIO_ReadPin(PISTON_D_GPIO_Port, PISTON_D_Pin);
-		p5 = HAL_GPIO_ReadPin(PISTON_PADI_GPIO_Port, PISTON_PADI_Pin);
-		if(p5==0){
+		if(p5==1){
 			atas1=1;
-			HAL_GPIO_TogglePin(PISTON_D_GPIO_Port, PISTON_D_Pin);
+			HAL_GPIO_WritePin(PISTON_D_GPIO_Port, PISTON_D_Pin, RESET);
+		}
+		else if(p5==0){
+			HAL_GPIO_WritePin(PISTON_D_GPIO_Port, PISTON_D_Pin, SET);
 		}
 		lsflag_4=1;
 		loopPadi=0;
 		stepPadi=0;
+		r3a=0;
 	}
 	else if (share==1){
 		if(currentTick-nowTick>500){
@@ -407,6 +419,20 @@ void mode_padi(){
 }
 
 void mode_bola(){
+	if(l==-1){
+		kec1=3545;
+		bldc_drive(&roller1, kec1);
+		bldc_drive(&roller2, kec1);
+		vTaskDelay(600);
+		kec1=3000;
+		bldc_drive(&roller1, kec1);
+		bldc_drive(&roller2, kec1);
+		vTaskDelay(300);
+		dutyR=3500;
+		kec1=3500;
+		kec=1;
+		l=1;
+	}
 	if (bawah==1) {
 		if (lsflag_5==0){//turun
 			motor_drive(&MPelontar, -1, 550);
@@ -451,9 +477,9 @@ void mode_bola(){
 			kec1=3500;
 		}
 	}
-	else if (kec==2 && adj==0){dutyR=4000;kec1=4000;}
-	else if (kec==3 && adj==0){dutyR=4500;kec1=4500;}
-	else if (kec==4 && adj==0){dutyR=5000;kec1=5000;}
+	else if (kec==2 && adj==0){dutyR=3545;kec1=3545;}
+	else if (kec==3 && adj==0){dutyR=4000;kec1=4000;}
+	else if (kec==4 && adj==0){dutyR=4500;kec1=4500;}
 	else if (kec==0 && adj==0){dutyR=3000;kec1=3000;}
 
 	if (kotak==1){
@@ -538,6 +564,7 @@ void mode_bola(){
 				capit = HAL_GPIO_ReadPin(PISTON_BOLA_GPIO_Port, PISTON_BOLA_Pin);
 				osDelay(3);
 				stepLoading=2;
+//				vTaskDelay(100);
 			}
 			lsflag_2=0;
 		}
@@ -1556,6 +1583,7 @@ void MechanismHandle_Task(void const * argument)
 			  kec=0;
 			  adj=0;
 			  mode=mode*-1;
+			  l = l*-1;
 			  nowTick = currentTick;
 		  }
 	  }
@@ -1591,8 +1619,8 @@ void OmniHandle_Task(void const * argument)
 	  else if (l2 > r2) putar = l2;
 	  else putar = 0;
 
-	  if (mode>0) putar1=putar/1.5;
-	  else if (mode<0) putar1=putar/1.5;
+	  if (mode>0) putar1=putar/1.6;
+	  else if (mode<0) putar1=putar/1.6;
 
 	  th = putar1;
 
