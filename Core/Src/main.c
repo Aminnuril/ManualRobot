@@ -64,11 +64,11 @@ osThreadId MechanismTaskHandle;
 osThreadId OmniTaskHandle;
 /* USER CODE BEGIN PV */
 //input stik
-int atas1, bawah1, kanan1,kiri1,kotak1,silang1,bulat1,segitiga1,tpad1,r3a;
-int atas, bawah, kanan,kiri,kotak,silang,bulat,segitiga;
+int atas, bawah, kanan, kiri, kotak, silang, bulat, segitiga;
 int l1, r1, l3, r3, share, options, ps, tpad;
-int rx, ry,lx,ly,l2,r2,lx1,ly1,lxs,lys;
+int lx,ly,l2,r2,lxs,lys;
 int rxm,rym,lxm,lym,th;
+int atas1, tpad1, r3a; //flag tombol
 //omni
 int wheel[4];
 int pulse_enc, pulse_dist;
@@ -78,16 +78,15 @@ int i=0;
 double nos=1;
 int putar=0, putar1=0;
 //sistem mode
-int mode=1;
-int lsflag_1=0,lsflag_2=0,lsflag_3=0,lsflag_4=0,lsflag_5=0,lsflag_6=0,lsflag_7=0,flagA=0,flagFirst=0,capit=0;
-int stepLoading=0;
-int loopPadi=0, stepPadi=0,p1=0,p2=0,p3=0,p4=0,p5=0;
+int mode=1; //flag MODE
+int lsflag_1=0,lsflag_2=0,lsflag_3=0,lsflag_4=0,lsflag_5=0,lsflag_6=0,lsflag_7=0,flagFirst=0,capit=0;
+int stepLoading=0, loopPadi=0, stepPadi=0, p1=0, p2=0, p3=0, p4=0, p5=0;//p=read silinder
+int l=1; // flag posisi awal ganti mode
 //BLDC
 int kec=0,kec1=0;
 int adj=0;
 int dutyAdj=0;
 uint32_t dutyR=3000;
-int l=1;
 int k=3000;
 //debounce
 uint32_t currentTick,nowTick;
@@ -131,7 +130,14 @@ void mode_padi(){
 	lsflag_7=HAL_GPIO_ReadPin(LS_7_GPIO_Port, LS_7_Pin);
 	p4 = HAL_GPIO_ReadPin(PISTON_D_GPIO_Port, PISTON_D_Pin);
 	p5 = HAL_GPIO_ReadPin(PISTON_PADI_GPIO_Port, PISTON_PADI_Pin);
-	l=1;
+	if(l==-1){
+		motor_drive(&MBola, 1, 800);
+		if(lsflag_1==1){
+			motor_drive(&MBola, 0, 0);
+			lsflag_2=0;
+			l=1;
+		}
+	}
 	if (kanan==1){//nutup manual 1, buka -1
 		motor_drive(&MExtendRight, 1, 750);//kanan 1
 		lsflag_7=1;
@@ -170,22 +176,8 @@ void mode_padi(){
 
 	if (bawah==1){//buka manual
 		atas1=0;
-//		lsflag_4=1;
 		loopPadi=0;
 		stepPadi=0;
-//		if (lsflag_7==1){
-//			motor_drive(&MExtendRight, -1, 500);//kiri
-//		}
-//		else {
-//			motor_drive(&MExtendRight, 0, 0);
-//		}
-//
-//		if (lsflag_6==1){
-//			motor_drive(&MExtendLeft, 1, 500);
-//		}
-//		else {
-//			motor_drive(&MExtendLeft, 0, 0);
-//		}
 	}
 
 	if (kotak==1){
@@ -415,11 +407,17 @@ void mode_padi(){
 	bldc_drive(&roller1, 3000);
 	bldc_drive(&roller2, 3000);
 	motor_drive(&MPelontar, 0, 0);
-	motor_drive(&MBola, 0, 0);
 }
 
 void mode_bola(){
 	if(l==-1){
+		if(lsflag_2==0){
+			motor_drive(&MBola, -1, 800);
+		}
+		else{
+			motor_drive(&MBola, 0, 0);
+			lsflag_1=0;
+		}
 		kec1=3545;
 		bldc_drive(&roller1, kec1);
 		bldc_drive(&roller2, kec1);
@@ -540,11 +538,12 @@ void mode_bola(){
 	}
 	else if (tpad==1){
 		tpad1=1;
+		stepLoading=0;
 	}
 	if(tpad1==1){
 		if(stepLoading==0){//ambil bola
 			if	(lsflag_2==0){
-				motor_drive(&MBola, 1, 800);
+				motor_drive(&MBola, -1, 800);
 			}
 			else{
 				motor_drive(&MBola, 0, 0);
@@ -554,7 +553,7 @@ void mode_bola(){
 				stepLoading=1;
 			}
 		}
-		if(stepLoading==1){//taruh ke pelontar
+		else if(stepLoading==1){//taruh ke pelontar
 			if(lsflag_1==0){
 				motor_drive(&MBola, 1, 1000);
 			}
@@ -564,7 +563,6 @@ void mode_bola(){
 				capit = HAL_GPIO_ReadPin(PISTON_BOLA_GPIO_Port, PISTON_BOLA_Pin);
 				osDelay(3);
 				stepLoading=2;
-//				vTaskDelay(100);
 			}
 			lsflag_2=0;
 		}
@@ -578,7 +576,6 @@ void mode_bola(){
 			}
 		}
 		else{
-//			lsflag_5=0;
 			tpad1=0;
 			stepLoading=0;
 		}

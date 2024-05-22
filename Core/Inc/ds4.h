@@ -18,15 +18,6 @@
 #define PS_BULAT_BIT 64
 #define TPAD_SEGITIGA_BIT 128
 
-//#define KANAN_BIT 1
-//#define BAWAH_BIT 2
-//#define ATAS_BIT 4
-//#define KIRI_BIT 8
-//#define KOTAK_BIT 16
-//#define SILANG_BIT 32
-//#define BULAT_BIT 64
-//#define SEGITIGA_BIT 128
-
 #include "CAN_SPI.h"
 
 extern uCAN_MSG txMessage;
@@ -35,7 +26,7 @@ extern int atas, bawah, kanan, kiri, kotak, silang, bulat, segitiga;
 extern int l1, r1, l3, r3, share, options, ps, tpad;
 extern int data0_buttons[];
 //extern int data1_buttons[];
-extern int rx, ry, lx, ly, l2, r2,lx1,ly1,lxs,lys;
+extern int lx, ly, l2, r2,lxs,lys;
 
 void ds4();
 void handleData0Buttons(uint8_t data0);
