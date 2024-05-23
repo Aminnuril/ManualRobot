@@ -410,27 +410,6 @@ void mode_padi(){
 }
 
 void mode_bola(){
-	if(l==-1){
-		if(lsflag_2==0){
-			motor_drive(&MBola, -1, 800);
-		}
-		else{
-			motor_drive(&MBola, 0, 0);
-			lsflag_1=0;
-		}
-		kec1=3545;
-		bldc_drive(&roller1, kec1);
-		bldc_drive(&roller2, kec1);
-		vTaskDelay(600);
-		kec1=3000;
-		bldc_drive(&roller1, kec1);
-		bldc_drive(&roller2, kec1);
-		vTaskDelay(300);
-		dutyR=3500;
-		kec1=3500;
-		kec=1;
-		l=1;
-	}
 	if (bawah==1) {
 		if (lsflag_5==0){//turun
 			motor_drive(&MPelontar, -1, 550);
@@ -520,7 +499,27 @@ void mode_bola(){
 	else{
 		motor_drive(&MBola, 0, 0);
 	}
-
+	if(l==-1){
+		motor_drive(&MBola, -1, 800);
+		if(lsflag_2==1){
+			motor_drive(&MBola, 0, 0);
+			lsflag_1=0;
+			kec1=3545;
+			bldc_drive(&roller1, kec1);
+			bldc_drive(&roller2, kec1);
+			vTaskDelay(600);
+			kec1=3000;
+			bldc_drive(&roller1, kec1);
+			bldc_drive(&roller2, kec1);
+			vTaskDelay(300);
+			dutyR=3500;
+			kec1=3500;
+			kec=1;
+			lsflag_5=1;
+			stepLoading=0;
+			l=1;
+		}
+	}
 	if (share==1){
 		adj=1;
 		if(currentTick-nowTick>100 && kec1>3000){
@@ -534,7 +533,6 @@ void mode_bola(){
 			kec1+=10;
 			nowTick = currentTick;
 		}
-
 	}
 	else if (tpad==1){
 		tpad1=1;
@@ -572,6 +570,7 @@ void mode_bola(){
 			}
 			else{
 				motor_drive(&MBola, 0, 0);
+				lsflag_1=0;
 				stepLoading=3;//end
 			}
 		}
@@ -581,7 +580,6 @@ void mode_bola(){
 		}
 	}
 	else{
-		lsflag_1=0;
 		tpad1=0;
 		stepLoading=0;
 	}
