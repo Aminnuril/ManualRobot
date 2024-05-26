@@ -110,7 +110,6 @@ void Error_Handler(void);
 #define ENC2_B_EXTI_IRQn EXTI15_10_IRQn
 #define LS_2_Pin GPIO_PIN_0
 #define LS_2_GPIO_Port GPIOG
-#define LS_2_EXTI_IRQn EXTI0_IRQn
 #define EN_LF_Pin GPIO_PIN_1
 #define EN_LF_GPIO_Port GPIOG
 #define LF_CH1_Pin GPIO_PIN_9
