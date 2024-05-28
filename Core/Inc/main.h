@@ -130,7 +130,6 @@ void Error_Handler(void);
 #define STLK_TX_GPIO_Port GPIOD
 #define LS_4_Pin GPIO_PIN_10
 #define LS_4_GPIO_Port GPIOD
-#define LS_4_EXTI_IRQn EXTI15_10_IRQn
 #define M_PELONTAR_CH1_Pin GPIO_PIN_12
 #define M_PELONTAR_CH1_GPIO_Port GPIOD
 #define M_PELONTAR_CH2_Pin GPIO_PIN_13
@@ -141,7 +140,6 @@ void Error_Handler(void);
 #define M_BOLA_CH2_GPIO_Port GPIOD
 #define LS_3_Pin GPIO_PIN_5
 #define LS_3_GPIO_Port GPIOG
-#define LS_3_EXTI_IRQn EXTI9_5_IRQn
 #define USB_OverCurrent_Pin GPIO_PIN_7
 #define USB_OverCurrent_GPIO_Port GPIOG
 #define LS_7_Pin GPIO_PIN_8

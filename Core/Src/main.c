@@ -126,6 +126,8 @@ int _write(int file, char *ptr, int len){ //buat printf
 	return len;
 }
 void mode_padi(){
+	lsflag_3=HAL_GPIO_ReadPin(LS_3_GPIO_Port, LS_3_Pin);
+	lsflag_4=HAL_GPIO_ReadPin(LS_4_GPIO_Port, LS_4_Pin);
 	lsflag_6=HAL_GPIO_ReadPin(LS_6_GPIO_Port, LS_6_Pin);
 	lsflag_7=HAL_GPIO_ReadPin(LS_7_GPIO_Port, LS_7_Pin);
 	p4 = HAL_GPIO_ReadPin(PISTON_D_GPIO_Port, PISTON_D_Pin);
@@ -202,22 +204,20 @@ void mode_padi(){
 		}
 	}
 	if (l1==1){//turun lift padi
-		if (lsflag_4==0){//turun
-			motor_drive(&MPadi, -1, 600);
+		if (lsflag_4==1){//turun
+			motor_drive(&MPadi, -1, 1000);
 		}
 		else {
 			motor_drive(&MPadi, 0 , 0);
 		}
-		lsflag_3=0;
 	}
 	else if (r1==1){//naik lift padi
-		if (lsflag_3==0){//naik
-			motor_drive(&MPadi, 1, 850);
+		if (lsflag_3==1){//naik
+			motor_drive(&MPadi, 1, 1000);
 		}
 		else {
 			motor_drive(&MPadi, 0 , 0);
 		}
-		lsflag_4=0;
 	}
 	else{//ketika l1 /r1 tidak ada aktivitas
 		motor_drive(&MPadi, 1, 0);
@@ -239,7 +239,6 @@ void mode_padi(){
 		else if(p5==0){
 			HAL_GPIO_WritePin(PISTON_D_GPIO_Port, PISTON_D_Pin, SET);
 		}
-		lsflag_4=1;
 		loopPadi=0;
 		stepPadi=0;
 		r3a=0;
@@ -265,9 +264,8 @@ void mode_padi(){
 	}
 	if (loopPadi==1){//sequence semi auto padi
 		if (stepPadi==0) {//posisi awal dibawah
-			if (lsflag_4==0){//turun
+			if (lsflag_4==1){//turun
 				motor_drive(&MPadi, -1, 1000);
-				lsflag_3=0;
 			}
 			else {
 				motor_drive(&MPadi, 0 , 0);
@@ -313,8 +311,6 @@ void mode_padi(){
 				}
 			}
 			else {//untuk mengecek ulang kesiapan posisi awal sequence
-				lsflag_4=1;
-				lsflag_3=0;
 				stepPadi=0;
 			}
 		}
@@ -326,21 +322,19 @@ void mode_padi(){
 			}
 		}
 		else if (stepPadi==1){
-			if (lsflag_3==0){//naik
+			if (lsflag_3==1){//naik
 				motor_drive(&MPadi, 1, 1000);
 			}
 			else {
 				motor_drive(&MPadi, 1 , 0);
-				lsflag_4=0;
 				stepPadi=5;
 			}
 		}
 	}
 	else if(loopPadi==3){//turun dan letakkan 2 padi(1 dan 3)
 		if(stepPadi==0){
-			if (lsflag_4==0){//turun
-				motor_drive(&MPadi, -1, 800);
-				lsflag_3=0;
+			if (lsflag_4==1){//turun
+				motor_drive(&MPadi, -1, 1000);
 			}
 			else {
 				motor_drive(&MPadi, 0 , 0);
@@ -353,26 +347,23 @@ void mode_padi(){
 			stepPadi=2;
 		}
 		else if (stepPadi==2){
-			if (lsflag_3==0){//naik
+			if (lsflag_3==1){//naik
 				motor_drive(&MPadi, 1, 1000);
-				lsflag_4=0;
 			}
 			else {
 				motor_drive(&MPadi, 0 , 0);
-				lsflag_4=0;
 				stepPadi=5;
 			}
 		}
 	}
 	else if(loopPadi==4){//turun dan letakkan 2 padi(2 dan 4)
 		if(stepPadi==0){
-			if (lsflag_4==0){//turun
-				motor_drive(&MPadi, -1, 800);
+			if (lsflag_4==1){//turun
+				motor_drive(&MPadi, -1, 1000);
 			}
 			else {
 				motor_drive(&MPadi, 0 , 0);
 				stepPadi=1;
-				lsflag_3=0;
 			}
 		}
 		else if(stepPadi==1){
@@ -382,17 +373,14 @@ void mode_padi(){
 				nowTick = currentTick;
 			}
 			stepPadi=2;
-			lsflag_4=0;
 		}
 		else if (stepPadi==2){
-			if (lsflag_3==0){//naik
+			if (lsflag_3==1){//naik
 				motor_drive(&MPadi, 1, 1000);
-				lsflag_4=0;
 			}
 			else {
 				motor_drive(&MPadi, 0 , 0);
 				stepPadi=3;
-				lsflag_3=1;
 			}
 		}
 		else if(stepPadi==3){//sequence selesai
@@ -1411,8 +1399,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LS_2_Pin LS_7_Pin */
-  GPIO_InitStruct.Pin = LS_2_Pin|LS_7_Pin;
+  /*Configure GPIO pins : LS_2_Pin LS_3_Pin LS_7_Pin */
+  GPIO_InitStruct.Pin = LS_2_Pin|LS_3_Pin|LS_7_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
@@ -1426,17 +1414,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LS_4_Pin LS_5_Pin */
-  GPIO_InitStruct.Pin = LS_4_Pin|LS_5_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  /*Configure GPIO pins : LS_4_Pin LS_6_Pin */
+  GPIO_InitStruct.Pin = LS_4_Pin|LS_6_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : LS_3_Pin LS_1_Pin ENC1_B_Pin */
-  GPIO_InitStruct.Pin = LS_3_Pin|LS_1_Pin|ENC1_B_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /*Configure GPIO pin : USB_OverCurrent_Pin */
   GPIO_InitStruct.Pin = USB_OverCurrent_Pin;
@@ -1458,11 +1440,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(PISTON_C_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LS_6_Pin */
-  GPIO_InitStruct.Pin = LS_6_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : LS_5_Pin */
+  GPIO_InitStruct.Pin = LS_5_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(LS_6_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(LS_5_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LS_1_Pin ENC1_B_Pin */
+  GPIO_InitStruct.Pin = LS_1_Pin|ENC1_B_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
   /*Configure GPIO pin : EN_BOLA_Pin */
   GPIO_InitStruct.Pin = EN_BOLA_Pin;
@@ -1504,13 +1492,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 //		lsflag_2 = 1;
 //	}
 
-	if (GPIO_Pin == LS_3_Pin) {
-		lsflag_3 = 1;
-	}
-
-	if (GPIO_Pin == LS_4_Pin) {
-		lsflag_4 = 1;
-	}
+//	if (GPIO_Pin == LS_3_Pin) {
+//		lsflag_3 = 1;
+//	}
+//
+//	if (GPIO_Pin == LS_4_Pin) {
+//		lsflag_4 = 1;
+//	}
 
 	if (GPIO_Pin == LS_5_Pin) {
 		lsflag_5 = 1;
@@ -1536,9 +1524,17 @@ void InputHandle_Task(void const * argument)
   for(;;)
   {
 //	  printf("input task\r\n");
+	  currentTick = HAL_GetTick(); //kayak millis
 	  ds4();
 	  lxm = lx - lxs;
 	  lym = ly - lys;
+	  if(segitiga==1){
+		  if(currentTick-nowTick>100 && nos<2){
+			  nos+=0.2;
+			  nowTick = currentTick;
+		  }
+	  }
+	  else nos = 1;
 
 //	  printf("\r\n at:%d, ki:%d, bw:%d, ka:%d, se3:%d, se4:%d, x:%d, o:%d,r1:%d, l1:%d, r3:%d, l3:%d, shr:%d, opt:%d, ps:%d, tpad:%d, lx:%d, ly:%d  ",
 //			  atas, kiri, bawah, kanan, segitiga, kotak,silang,bulat,r1, l1, r3, l3, share, options,ps,tpad, lxm, lym);
@@ -1563,14 +1559,14 @@ void MechanismHandle_Task(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  currentTick = HAL_GetTick(); //kayak millis
-	  if(segitiga==1){
-		  if(currentTick-nowTick>100 && nos<2){
-			  nos+=0.2;
-			  nowTick = currentTick;
-		  }
-	  }
-	  else nos = 1;
+//	  currentTick = HAL_GetTick(); //kayak millis
+//	  if(segitiga==1){
+//		  if(currentTick-nowTick>100 && nos<2){
+//			  nos+=0.2;
+//			  nowTick = currentTick;
+//		  }
+//	  }
+//	  else nos = 1;
 	  if (ps == 1) {
 		  if (currentTick - nowTick > 500) {
 			  kec=0;
