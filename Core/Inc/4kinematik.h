@@ -19,7 +19,8 @@ extern "C" {
 //#define lambda 20
 #define d2r(x) x*(M_PI/180)
 
-void kinematikM(int x, int y, int th, double nos);
+void kinematikM1(int x, int y, int th, double nos);
+void kinematikM2(int x, int y, int th, double nos);
 
 #ifdef __cplusplus
 }

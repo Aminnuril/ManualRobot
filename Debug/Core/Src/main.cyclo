@@ -17,6 +17,6 @@
 ../Core/Src/main.c:1486:6:HAL_GPIO_EXTI_Callback	3
 ../Core/Src/main.c:1520:6:InputHandle_Task	4
 ../Core/Src/main.c:1556:6:MechanismHandle_Task	5
-../Core/Src/main.c:1600:6:OmniHandle_Task	6
-../Core/Src/main.c:1659:6:HAL_TIM_PeriodElapsedCallback	2
-../Core/Src/main.c:1676:6:Error_Handler	1
+../Core/Src/main.c:1600:6:OmniHandle_Task	9
+../Core/Src/main.c:1677:6:HAL_TIM_PeriodElapsedCallback	2
+../Core/Src/main.c:1694:6:Error_Handler	1
